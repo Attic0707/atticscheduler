@@ -43,7 +43,6 @@ public class MainFrame extends JFrame {
 	private Controller controller;
 	private TablePanel tablePanel;
 	private JTabbedPane tabbedPane;
-	private String[] menuItemNames;
 
 	public MainFrame() {
 		super("Attic Scheduler");
@@ -293,11 +292,6 @@ public class MainFrame extends JFrame {
 		editMenu.setForeground(Color.WHITE);
 		windowMenu.setForeground(Color.WHITE);
 		helpMenu.setForeground(Color.WHITE);
-
-		// possible alternative
-		menuItemNames = new String[] { "New File", "Open File", "Recent Files", "Export Users", "Export Tasks",
-				"Export Settings", "Save", "Save As...", "Log in", "Log Out", "Exit", "Cut", "Copy", "Paste", "Find",
-				"Find and Replace", "Add Bookmark" };
 
 		JMenuItem newFile = new JMenuItem("New File");
 		JMenuItem openFile = new JMenuItem("Open File");
