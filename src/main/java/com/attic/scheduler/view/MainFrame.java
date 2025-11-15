@@ -306,9 +306,6 @@ public class MainFrame extends JFrame {
 		JMenuItem exportTasks = new JMenuItem("Export Tasks");
 		JMenuItem exportSettings = new JMenuItem("Export Settings");
 		JMenuItem saveFile = new JMenuItem("Save");
-		JMenuItem saveAs = new JMenuItem("Save As...");
-		JMenuItem saveJson = new JMenuItem("Save Issues as JSON");
-		JMenuItem openJson = new JMenuItem("Open Issues from JSON");
 		JMenuItem logIn = new JMenuItem("Log in");
 		JMenuItem logOut = new JMenuItem("Log Out");
 		JMenuItem exit = new JMenuItem("Exit");
@@ -341,7 +338,6 @@ public class MainFrame extends JFrame {
 		openFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
 		recentFiles.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.CTRL_MASK));
 		saveFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
-		saveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.SHIFT_MASK | ActionEvent.CTRL_MASK));
 		logIn.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, ActionEvent.CTRL_MASK));
 		cut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
 		copy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
@@ -429,29 +425,37 @@ public class MainFrame extends JFrame {
 		saveFile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (fileChooser.showSaveDialog(MainFrame.this) == JFileChooser.APPROVE_OPTION) {
+					File file = fileChooser.getSelectedFile();
+
+					// ensure .json extension
+					if (!file.getName().toLowerCase().endsWith(".json")) {
+						file = new File(file.getParentFile(), file.getName() + ".json");
+					}
+
 					try {
-						controller.saveToFile(fileChooser.getSelectedFile());
-					} catch (IOException e1) {
-						JOptionPane.showMessageDialog(MainFrame.this, "Unable to save file", "Fatal Error",
-								JOptionPane.ERROR_MESSAGE);
+						controller.saveIssuesAsJson(file);
+					} catch (IOException ex) {
+						JOptionPane.showMessageDialog( MainFrame.this, "Unable to save JSON file", "Error", JOptionPane.ERROR_MESSAGE );
 					}
 				}
 			}
-
 		});
 
-		saveAs.addActionListener(new ActionListener() {
+		openFile.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (fileChooser.showSaveDialog(MainFrame.this) == JFileChooser.APPROVE_OPTION) {
+				if (fileChooser.showOpenDialog(MainFrame.this) == JFileChooser.APPROVE_OPTION) {
+					File file = fileChooser.getSelectedFile();
 					try {
-						controller.saveToFile(fileChooser.getSelectedFile());
-					} catch (IOException e1) { 
-						JOptionPane.showMessageDialog(MainFrame.this, "Unable to save file", "Fatal Error", JOptionPane.ERROR_MESSAGE);
+						controller.loadIssuesFromJson(file);
+						tablePanel.refresh();
+					} catch (IOException ex) {
+						ex.printStackTrace();
+						JOptionPane.showMessageDialog( MainFrame.this, "Unable to load JSON file", "Error", JOptionPane.ERROR_MESSAGE );
 					}
 				}
 			}
 		});
-
 
 		logOut.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -478,21 +482,6 @@ public class MainFrame extends JFrame {
 					toolbar.clickLogin();
 					menuBar.revalidate();
 				}
-			}
-		});
-		openFile.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (fileChooser.showOpenDialog(MainFrame.this) == JFileChooser.APPROVE_OPTION)
-					try {
-						controller.loadFromFile(fileChooser.getSelectedFile());
-						controller.loadCSVFile(fileChooser.getSelectedFile());
-						kanbanPanel.tasksLoaded();
-						tablePanel.refresh();
-					} catch (IOException e1) {
-						JOptionPane.showMessageDialog(MainFrame.this, "Unable to load file", "Fatal Error",
-								JOptionPane.ERROR_MESSAGE);
-					}
-				;
 			}
 		});
 
@@ -523,9 +512,6 @@ public class MainFrame extends JFrame {
 		fileMenu.add(exportOperations);
 		fileMenu.addSeparator();
 		fileMenu.add(saveFile);
-		fileMenu.add(saveAs);
-		fileMenu.add(saveJson);
-		fileMenu.add(openJson);
 		fileMenu.addSeparator();
 		fileMenu.add(logIn);
 		fileMenu.add(logOut);

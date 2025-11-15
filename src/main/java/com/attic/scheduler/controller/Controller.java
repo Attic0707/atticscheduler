@@ -243,10 +243,20 @@ public class Controller {
 		} else if (issuePriority.equals("Urgent")) {
 			priority = Priority.Urgent;
 		}
-
-		Issue issue = new Issue(issueName, stageId, issueStatus, issueDesc, dueDate, assignee, type, priority, issueDifficulty,
-				subTaskId);
+		Issue issue = Issue.create(
+				issueName,
+				stageId,
+				issueStatus,
+				issueDesc,
+				dueDate,
+				assignee,
+				type,
+				priority,
+				issueDifficulty,
+				subTaskId
+		);
 		db.addIssue(issue);
+
 	}
 
 	public void saveToFile(File file) throws IOException {
