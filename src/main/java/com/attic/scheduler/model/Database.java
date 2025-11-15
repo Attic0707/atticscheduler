@@ -211,7 +211,7 @@ public class Database {
 
 	public void editIssue(int index, Object editedValue) {
 		issues.get(index).setDesc(editedValue.toString());
-//		issues.edit(index);
+		// issues.edit(index);
 	}
 	
 	// Save issues as JSON

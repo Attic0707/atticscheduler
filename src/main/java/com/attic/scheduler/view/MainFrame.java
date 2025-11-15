@@ -452,41 +452,6 @@ public class MainFrame extends JFrame {
 			}
 		});
 
-		saveJson.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (fileChooser.showSaveDialog(MainFrame.this) == JFileChooser.APPROVE_OPTION) {
-					File file = fileChooser.getSelectedFile();
-
-					// ensure .json extension
-					if (!file.getName().toLowerCase().endsWith(".json")) {
-						file = new File(file.getParentFile(), file.getName() + ".json");
-					}
-
-					try {
-						controller.saveIssuesAsJson(file);
-					} catch (IOException ex) {
-						JOptionPane.showMessageDialog( MainFrame.this, "Unable to save JSON file", "Error", JOptionPane.ERROR_MESSAGE );
-					}
-				}
-			}
-		});
-
-		openJson.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (fileChooser.showOpenDialog(MainFrame.this) == JFileChooser.APPROVE_OPTION) {
-					File file = fileChooser.getSelectedFile();
-					try {
-						controller.loadIssuesFromJson(file);
-						tablePanel.refresh();
-						kanbanPanel.tasksLoaded(); // later you can make this recreate cards
-					} catch (IOException ex) {
-						JOptionPane.showMessageDialog( MainFrame.this, "Unable to load JSON file", "Error", JOptionPane.ERROR_MESSAGE );
-					}
-				}
-			}
-		});
 
 		logOut.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
