@@ -273,4 +273,11 @@ public class Controller {
 		db.editIssue(index, editedValue);
 	}
 
+	public void saveIssuesAsJson(File file) throws IOException {
+		db.saveIssuesAsJson(file);
+	}
+
+	public void loadIssuesFromJson(File file) throws IOException {
+		db.loadIssuesFromJson(file);
+	}
 }

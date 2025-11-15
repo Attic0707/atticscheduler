@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 public class Database {
 	private List<Issue> issues;
@@ -22,6 +24,7 @@ public class Database {
 	private String loggedInUser;
 	private ArrayList<String> userDetails;
 	private HashMap<String, ArrayList<String>> userNameToLoginHistory;
+	private final ObjectMapper objectMapper;
 	// ArrayList<String>
 
 	public Database() {
@@ -30,6 +33,8 @@ public class Database {
 		userMap = new HashMap<String, char[]>();
 		issueMap = new HashMap<String, String>();
 		userNameToLoginHistory = new HashMap<String, ArrayList<String>>();
+		objectMapper = new ObjectMapper();
+		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 	}
 
 	public void putToUserMap(String userName, char[] password) {
@@ -207,5 +212,18 @@ public class Database {
 	public void editIssue(int index, Object editedValue) {
 		issues.get(index).setDesc(editedValue.toString());
 //		issues.edit(index);
+	}
+	
+	// Save issues as JSON
+	public void saveIssuesAsJson(File file) throws IOException {
+		Issue[] issueArray = issues.toArray(new Issue[0]);
+		objectMapper.writeValue(file, issueArray);
+	}
+
+	// Load issues from JSON
+	public void loadIssuesFromJson(File file) throws IOException {
+		Issue[] issueArray = objectMapper.readValue(file, Issue[].class);
+		issues.clear();
+		issues.addAll(Arrays.asList(issueArray));
 	}
 }

@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -298,11 +299,6 @@ public class MainFrame extends JFrame {
 				"Export Settings", "Save", "Save As...", "Log in", "Log Out", "Exit", "Cut", "Copy", "Paste", "Find",
 				"Find and Replace", "Add Bookmark" };
 
-		for (int i = 0; i < menuItemNames.length; i++) {
-			JMenuItem item = new JMenuItem(menuItemNames[i]);
-			System.out.println(item);
-		}
-
 		JMenuItem newFile = new JMenuItem("New File");
 		JMenuItem openFile = new JMenuItem("Open File");
 		JMenuItem recentFiles = new JMenuItem("Recent Files");
@@ -311,6 +307,8 @@ public class MainFrame extends JFrame {
 		JMenuItem exportSettings = new JMenuItem("Export Settings");
 		JMenuItem saveFile = new JMenuItem("Save");
 		JMenuItem saveAs = new JMenuItem("Save As...");
+		JMenuItem saveJson = new JMenuItem("Save Issues as JSON");
+		JMenuItem openJson = new JMenuItem("Open Issues from JSON");
 		JMenuItem logIn = new JMenuItem("Log in");
 		JMenuItem logOut = new JMenuItem("Log Out");
 		JMenuItem exit = new JMenuItem("Exit");
@@ -447,9 +445,44 @@ public class MainFrame extends JFrame {
 				if (fileChooser.showSaveDialog(MainFrame.this) == JFileChooser.APPROVE_OPTION) {
 					try {
 						controller.saveToFile(fileChooser.getSelectedFile());
-					} catch (IOException e1) {
-						JOptionPane.showMessageDialog(MainFrame.this, "Unable to save file", "Fatal Error",
-								JOptionPane.ERROR_MESSAGE);
+					} catch (IOException e1) { 
+						JOptionPane.showMessageDialog(MainFrame.this, "Unable to save file", "Fatal Error", JOptionPane.ERROR_MESSAGE);
+					}
+				}
+			}
+		});
+
+		saveJson.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (fileChooser.showSaveDialog(MainFrame.this) == JFileChooser.APPROVE_OPTION) {
+					File file = fileChooser.getSelectedFile();
+
+					// ensure .json extension
+					if (!file.getName().toLowerCase().endsWith(".json")) {
+						file = new File(file.getParentFile(), file.getName() + ".json");
+					}
+
+					try {
+						controller.saveIssuesAsJson(file);
+					} catch (IOException ex) {
+						JOptionPane.showMessageDialog( MainFrame.this, "Unable to save JSON file", "Error", JOptionPane.ERROR_MESSAGE );
+					}
+				}
+			}
+		});
+
+		openJson.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (fileChooser.showOpenDialog(MainFrame.this) == JFileChooser.APPROVE_OPTION) {
+					File file = fileChooser.getSelectedFile();
+					try {
+						controller.loadIssuesFromJson(file);
+						tablePanel.refresh();
+						kanbanPanel.tasksLoaded(); // later you can make this recreate cards
+					} catch (IOException ex) {
+						JOptionPane.showMessageDialog( MainFrame.this, "Unable to load JSON file", "Error", JOptionPane.ERROR_MESSAGE );
 					}
 				}
 			}
@@ -526,6 +559,8 @@ public class MainFrame extends JFrame {
 		fileMenu.addSeparator();
 		fileMenu.add(saveFile);
 		fileMenu.add(saveAs);
+		fileMenu.add(saveJson);
+		fileMenu.add(openJson);
 		fileMenu.addSeparator();
 		fileMenu.add(logIn);
 		fileMenu.add(logOut);
