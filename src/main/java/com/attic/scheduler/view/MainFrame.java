@@ -145,11 +145,9 @@ public class MainFrame extends JFrame {
 			public void signUpEventOccured(SignUpEvent sue) {
 				if (sue.retrieveCountries()) {
 					toolbar.getCountryList(controller.getCountryList());
-
 				} else {
-					controller.putToUserMap(sue.getUserName(), sue.getPassword());
-					controller.addUser(sue);
-					// formPanel.getUserNameList();
+					controller.putToUserMap(sue.getUserName(), sue.getPassword()); // legacy
+					controller.insertUserRecord(sue);
 				}
 			}
 		});
@@ -190,7 +188,7 @@ public class MainFrame extends JFrame {
 				if (te.getActionCommand() == "Calendar Clicked") {
 					CalendarView calendar = new CalendarView();
 
-					// OPTIONAL: demo tasks – later you'll pull these from Controller
+					// sample tasks – later I'll pull these from Controller
 					Calendar today = Calendar.getInstance();
 					int y = today.get(Calendar.YEAR);
 					int m = today.get(java.util.Calendar.MONTH);

@@ -2,6 +2,7 @@ package com.attic.scheduler.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -13,11 +14,15 @@ import com.attic.scheduler.model.Issue;
 import com.attic.scheduler.model.Priority;
 import com.attic.scheduler.model.Type;
 import com.attic.scheduler.model.User;
+import com.attic.scheduler.model.dao.IssueDAO;
+import com.attic.scheduler.model.dao.UserDAO;
 import com.attic.scheduler.view.FormEvent;
 import com.attic.scheduler.view.SignUpEvent;
 
 public class Controller {
 	Database db = new Database();
+	IssueDAO issueDAO = new IssueDAO();
+	UserDAO userDAO = new UserDAO();
 
 	public List<Issue> getIssueList() {
 		return db.getIssues();
@@ -84,9 +89,7 @@ public class Controller {
 	}
 
 	public void deleteRequest(boolean confirm, char[] confirmPass) {
-//		if(confirm == true && Arrays.equals(confirmPass, )) {
 		db.deleteAccount();
-//		}
 	}
 
 	public void logHistory(String loginDate) {
@@ -140,7 +143,7 @@ public class Controller {
 		return userDetails;
 	}
 
-	public void addUser(SignUpEvent sue) {
+	public void insertUserRecord(SignUpEvent sue) {
 		String firstName = sue.getFirstName();
 		String lastName = sue.getLastName();
 		String userName = sue.getUserName();
@@ -159,26 +162,20 @@ public class Controller {
 		String memberSince = sue.getMemberSince();
 		User user = new User(firstName, lastName, userName, password, street, postalCode, city, state, country, bio,
 				phone, email, company, website, social, memberSince);
-//		Check if the user name already exists in the DB
-		if (db.getUserNameList().size() != 0 && db.getUserNameList().contains(userName)) {
+		// Check if the user name already exists in the DB
+		if (db.getUserNameList().size() != 0 && db.getUserNameList().contains(userName)) { // legacy
 			System.out.println("Username in DB: ");
-			
-//			for (String s : db.getUserNameList()) {
-//				System.out.println("Check if true : " + !s.equals(userName));
-//				if (!s.equals(userName)) {
-//					db.addUser(user);
-//					System.out.println("DB size: " + db.getUsers().size());
-//				} else { 
-//					System.out.println("DB size: " + db.getUsers().size());
-//					System.out.println("user already in DB");
-//				}
-//			}
 		} else {
-			System.out.println("UserDB is empty, creating a new user...");
-			db.addUser(user);
-			System.out.println("DB size: " + db.getUsers().size());
+			db.addUser(user); // legacy
+			System.out.println("DB size: " + db.getUsers().size()); // legacy
+			try {
+				userDAO.insertUser(user);
+				getAllUsers();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
-	} 
+	}
 
 	public void addIssue(FormEvent fv) {
 		String issueName = fv.getIssueName();
@@ -191,23 +188,6 @@ public class Controller {
 		String issuePriority = fv.getPriority();
 		int issueDifficulty = fv.getDifficulty();
 		String subTaskId = fv.getSubTaskId();
-
-		/*
-		Status status = null;
-		if (issueStatus.equals("Backlog")) {
-			status = Status.Backlog;
-		} else if (issueStatus.equals("Selected for Development")) {
-			status = Status.SelectedForDevelopment;
-		} else if (issueStatus.equals("In Progress")) {
-			status = Status.InProgress;
-		} else if (issueStatus.equals("Development Done")) {
-			status = Status.DevelopmentDone;
-		} else if (issueStatus.equals("Peer Review")) {
-			status = Status.PeerReview;
-		} else if (issueStatus.equals("Finished")) {
-			status = Status.Finished;
-		}
-		*/
 
 		Assignee assignee = null;
 		if (issueAssignee.equals("Admin")) {
@@ -255,8 +235,14 @@ public class Controller {
 				issueDifficulty,
 				subTaskId
 		);
-		db.addIssue(issue);
+		db.addIssue(issue); // legacy
 
+		try {
+			issueDAO.insert(issue);
+			getAllIssues();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void saveToFile(File file) throws IOException {
@@ -289,5 +275,26 @@ public class Controller {
 
 	public void loadIssuesFromJson(File file) throws IOException {
 		db.loadIssuesFromJson(file);
+	}
+
+	public void getAllIssues() {
+		List<Issue> allIssues;
+		try {
+			allIssues = issueDAO.findAll();
+			System.out.println("ALL ISSUES: " + allIssues);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void getAllUsers() {
+		List<User> allUsers;
+		try {
+			allUsers = userDAO.getAllUsers();
+			System.out.println("ALL USERS: " + allUsers);
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 }

@@ -41,6 +41,9 @@ public class User implements Serializable {
 		this.id = count;
 		count++;
 	}
+
+    // *** Required by Jackson ***
+    public User() { }
 	
 	public int getUserId() {
 		return id;
@@ -96,9 +99,12 @@ public class User implements Serializable {
 	public int getUserCount() {
 		return count;
 	}
-
 	public ArrayList<String> getUserLoginHistory() {
 		return loginHistory;
+	}
+
+	public void setUserId(int id) {
+		this.id = id;
 	}
 
 	public void setFirstName(String firstName) {

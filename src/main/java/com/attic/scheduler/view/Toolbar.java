@@ -988,57 +988,25 @@ public class Toolbar extends JPanel {
 
 						if (Arrays.equals(pass.getPassword(), confirmPass.getPassword()) && firstPaneResult == 0) {
 							JOptionPane.showMessageDialog(null, "New profile created successfully!");
-							StringBuilder sb = new StringBuilder("First Name: ").append(fieldArray.get(0).getText())
-									.append("\n" + "Last Name: ").append(fieldArray.get(1).getText())
-									.append("\n" + "Username: ").append(fieldArray.get(2).getText())
-									.append("\n" + "Password: ").append(pass.getPassword());
-							File file = new File("UserInfo.txt");
-							try {
-								if (!file.exists()) {
-									file.createNewFile();
-								} else {
-									BufferedWriter bw = new BufferedWriter(new FileWriter(file));
-									bw.write(sb.toString());
-									bw.close();
-
-									if (fieldArray.get(4).getText() != null) {
-										try {
-											Integer.parseInt(fieldArray.get(4).getText());
-										} catch (NumberFormatException nfe) {
-											System.out.println(
-													"User input was not Int or Int was incorrect, converting to 0 : "
-															+ nfe.getMessage());
-											fieldArray.get(4).setText("0");
-										}
-									}
-									if (fieldArray.get(9).getText() != null) {
-										try {
-											Integer.parseInt(fieldArray.get(9).getText());
-										} catch (NumberFormatException nfe) {
-											System.out.println(
-													"User input was not Int or Int was incorrect, converting to 0 : "
-															+ nfe.getMessage());
-											fieldArray.get(9).setText("0");
-										}
-									}
-
-									SignUpEvent sue = new SignUpEvent(this, fieldArray.get(0).getText(),
-											fieldArray.get(1).getText(), fieldArray.get(2).getText(),
-											pass.getPassword(), fieldArray.get(3).getText(),
-											fieldArray.get(4).getText().isEmpty() ? 0
-													: Integer.parseInt(fieldArray.get(4).getText()),
-											fieldArray.get(5).getText(), fieldArray.get(6).getText(),
-											(String) countryList.getSelectedItem(), fieldArray.get(8).getText(),
-											fieldArray.get(9).getText().isEmpty() ? 0
-													: Integer.valueOf(fieldArray.get(9).getText()),
-											fieldArray.get(10).getText(), fieldArray.get(11).getText(),
-											fieldArray.get(12).getText(), fieldArray.get(13).getText(),
-											timeStamp.getText(), false);
-									signUpListener.signUpEventOccured(sue);
-								}
-							} catch (IOException e1) {
-								System.out.println("Unable to open file");
-							}
+							SignUpEvent sue = new SignUpEvent(this,
+								fieldArray.get(0).getText(),
+								fieldArray.get(1).getText(),
+								fieldArray.get(2).getText(),
+								pass.getPassword(),
+								fieldArray.get(3).getText(),
+								fieldArray.get(4).getText().isEmpty() ? 0 : Integer.parseInt(fieldArray.get(4).getText()),
+								fieldArray.get(5).getText(),
+								fieldArray.get(6).getText(),
+								(String) countryList.getSelectedItem(),
+								fieldArray.get(8).getText(),
+								fieldArray.get(9).getText().isEmpty() ? 0 : Integer.valueOf(fieldArray.get(9).getText()),
+								fieldArray.get(10).getText(), 
+								fieldArray.get(11).getText(),
+								fieldArray.get(12).getText(), 
+								fieldArray.get(13).getText(),
+								timeStamp.getText(),
+								false);
+							signUpListener.signUpEventOccured(sue);
 						}
 					}
 				}

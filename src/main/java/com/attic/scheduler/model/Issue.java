@@ -49,6 +49,10 @@ public class Issue implements Serializable {
         return issue;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public int getId() {
         return id;
     }
