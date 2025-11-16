@@ -20,11 +20,8 @@ public class Issue implements Serializable {
     private String subTaskId;
 
     // *** Required by Jackson ***
-    public Issue() {
-        // Jackson will call this and then use setters / fields
-    }
+    public Issue() { }
 
-    // *** Factory for your own code ***
     public static Issue create(
             String issueName,
             int stageId,
